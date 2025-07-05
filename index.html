@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Click the Circle Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin: 20px;
+    }
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 80vh;
+      border: 3px solid white;
+      margin-bottom: 20px;
+    }
+    #circle {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: #00FF88;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    #score, #timer, #bestScore {
+      font-size: 1.3rem;
+      margin: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #00FF88;
+      color: #121212;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Click the Circle Game</h1>
+  <div id="score">Score: 0</div>
+  <div id="timer">Time: 30</div>
+  <div id="bestScore">Best Score: 0</div>
+  <div id="gameArea">
+    <div id="circle"></div>
+  </div>
+  <button onclick="startGame()">Start Game</button>
+
+  <script>
+    const circle = document.getElementById("circle");
+    const scoreText = document.getElementById("score");
+    const timerText = document.getElementById("timer");
+    const bestScoreText = document.getElementById("bestScore");
+    const gameArea = document.getElementById("gameArea");
+    let score = 0;
+    let timeLeft = 30;
+    let timerInterval;
+    let bestScore = localStorage.getItem("bestScore") || 0;
+
+    bestScoreText.innerText = "Best Score: " + bestScore;
+
+    function moveCircle() {
+      const maxX = gameArea.clientWidth - circle.clientWidth;
+      const maxY = gameArea.clientHeight - circle.clientHeight;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      circle.style.left = randomX + "px";
+      circle.style.top = randomY + "px";
+    }
+
+    circle.addEventListener("click", () => {
+      if (timeLeft > 0) {
+        score++;
+        scoreText.innerText = "Score: " + score;
+        moveCircle();
+      }
+    });
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreText.innerText = "Score: " + score;
+      timerText.innerText = "Time: " + timeLeft;
+      moveCircle();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerText.innerText = "Time: " + timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          alert("⏰ Time's up! Your score: " + score);
+          if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem("bestScore", bestScore);
+            bestScoreText.innerText = "Best Score: " + bestScore;
+            alert("🔥 New High Score!");
+          }
+        }
+      }, 1000);
+    }
+
+    circle.style.left = "-100px";
+    circle.style.top = "-100px";
+  </script>
+
+</body>
+</html>
